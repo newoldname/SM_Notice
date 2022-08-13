@@ -1,42 +1,46 @@
 import 'package:flutter/material.dart';
-import 'screen/school_notice_screen.dart';
-//import './util/weather_image.dart';
+import 'package:sm_notice/navigation_drawer.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  static final String title = 'SM Notice APP';
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-      appBar: AppBar(title: Text("Notice App")),
-      body: SchoolNoticeScreen(),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text("Drawer Header"),
-            ),
-            ListTile(
-              title: const Text('Home'),
-              onTap: () {},
-            ),
-            ListTile(
-              title: const Text('School'),
-              onTap: () {},
-            ),
-            ListTile(
-              title: const Text('Major'),
-              onTap: () {},
-            ),
-          ],
-        ),
-      ),
-    ));
-  }
+  Widget build(BuildContext context) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: title,
+        theme: ThemeData(primarySwatch: Colors.blue),
+        home: MainPage(),
+      );
 }
+
+class MainPage extends StatefulWidget {
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        drawer: NavigetionDrawer(),
+        // endDrawer: NavigationDrawerWidget(),
+        appBar: AppBar(
+          title: Text(MyApp.title),
+        ),
+        body: Text(""),
+      );
+}
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({Key? key}) : super(key: key);
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       drawer: NavigationDrawer(),
+//       appBar: AppBar(title: Text("Notice App")),
+//       body: MajorScreen(),
+      
+//     );
+//   }
+// }

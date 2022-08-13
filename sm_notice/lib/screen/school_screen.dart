@@ -3,14 +3,14 @@ import 'package:sm_notice/model/notice.dart';
 import 'package:sm_notice/scraper/homepage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SchoolNoticeScreen extends StatefulWidget {
-  const SchoolNoticeScreen({Key? key}) : super(key: key);
+class SchoolScreen extends StatefulWidget {
+  const SchoolScreen({Key? key}) : super(key: key);
 
   @override
-  State<SchoolNoticeScreen> createState() => _SchoolNoticeScreenState();
+  State<SchoolScreen> createState() => _SchoolScreenState();
 }
 
-class _SchoolNoticeScreenState extends State<SchoolNoticeScreen> {
+class _SchoolScreenState extends State<SchoolScreen> {
   List<Notice> allNotice = [];
   bool isLoading = false;
 
