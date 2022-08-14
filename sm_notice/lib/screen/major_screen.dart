@@ -3,6 +3,8 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:sm_notice/model/notice.dart';
 import 'package:sm_notice/scraper/major.dart';
+import 'package:sm_notice/screen/notice_card.dart';
+import 'package:sm_notice/tools/vars.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MajorScreen extends StatefulWidget {
@@ -16,17 +18,35 @@ class _MajorScreenState extends State<MajorScreen> {
   String majorName = "hi";
   bool isLoading = false;
   List<Notice> allNotice = [];
-  var majorList = ["hi", "cs", "smubiz"];
+  var selectMajors = Set<String>();
 
-  getDate() async {
+  bool isInSet(String majorName) {
+    return selectMajors.contains(majorName);
+  }
+
+  _addToSet(String majorName) {
+    selectMajors.add(majorName);
+  }
+
+  _removeFromSet(String majorName) {
+    selectMajors.remove(majorName);
+  }
+
+  _getDate() async {
     setState(() {
       isLoading = true;
     });
-    List noticeCode =
-        await Major().getNoticeListCode(Major().makeUrl(majorName, 100, 0));
 
-    allNotice = Major().getAllNotice(noticeCode);
-    isLoading = false;
+    for (var nowMajor in selectMajors) {
+      List noticeCode =
+          await Major().getNoticeListCode(Major().makeUrl(nowMajor, 100, 0));
+
+      allNotice += Major().getAllNotice(noticeCode, nowMajor);
+    }
+
+    allNotice.sort((a, b) {
+      return b.noticeID.compareTo(a.noticeID);
+    });
 
     setState(() {
       isLoading = false;
@@ -46,7 +66,8 @@ class _MajorScreenState extends State<MajorScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getDate();
+    _addToSet("휴먼지능정보공학전공");
+    _getDate();
   }
 
   @override
@@ -57,65 +78,102 @@ class _MajorScreenState extends State<MajorScreen> {
       ),
       body: Column(
         children: [
-          DropdownButton(
-            value: majorName,
-            underline: Container(
-              height: 2,
-              color: Colors.deepPurpleAccent,
-            ),
-            items: majorList.map((String item) {
-              return DropdownMenuItem<String>(
-                child: Text('$item'),
-                value: item,
-              );
-            }).toList(),
-            onChanged: (dynamic value) {
-              setState(() {
-                majorName = value;
-                getDate();
-              });
-            },
-          ),
           isLoading
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
               : Expanded(
-                child: ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: allNotice.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          _launchUrl(allNotice[index].baseReadUrl,
-                              allNotice[index].noticeID);
-                        },
-                        child: Column(
-                          children: [
-                            Text(allNotice[index].title),
-                            Row(
-                              children: [
-                                allNotice[index].isTop
-                                    ? Text("Top")
-                                    : Text("Not Top"),
-                                Text(allNotice[index].category),
-                                Text(allNotice[index].campus),
-                                Text(allNotice[index].writer),
-                                Text(allNotice[index].date),
-                              ],
-                            ),
-                            Divider(
-                              color: Colors.blue,
-                              thickness: 5.0,
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
-              )
+                  child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: allNotice.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            _launchUrl(allNotice[index].baseReadUrl,
+                                allNotice[index].noticeID);
+                          },
+                          child: Column(
+                            children: [
+                              NoticeCard(nowNotice: allNotice[index]),
+
+                              // Text(allNotice[index].title),
+                              // Row(
+                              //   children: [
+                              //     allNotice[index].isTop
+                              //         ? Text("Top")
+                              //         : Text("Not Top"),
+                              //     Text(allNotice[index].category),
+                              //     Text(allNotice[index].campus),
+                              //     Text(allNotice[index].writer),
+                              //     Text(allNotice[index].date),
+                              //   ],
+                              // ),
+                              // Divider(
+                              //   color: Colors.blue,
+                              //   thickness: 5.0,
+                              // ),
+
+
+                            ],
+                          ),
+                        );
+                      }),
+                )
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (context) {
+                return majorCheckBoxAlert();
+              });
+        },
+        icon: Icon(Icons.add),
+        label: Text("Select Majors"),
       ),
     );
   }
+
+  Widget majorCheckBoxAlert() {
+    return AlertDialog(
+      title: Text("전공을 선택하세요"),
+      content: StatefulBuilder(builder: (__, StateSetter setState) {
+        return Container(
+          width: 300,
+          height: 300,
+          child: ListView(
+              children: allMajors.keys.map((String key) {
+            return CheckboxListTile(
+                title: Text(key),
+                value: isInSet(key),
+                onChanged: (value) {
+                  if (value!) {
+                    _addToSet(key);
+                  } else {
+                    _removeFromSet(key);
+                  }
+                  setState(() {});
+                });
+          }).toList()),
+        );
+      }),
+      actions: [
+        TextButton(
+          onPressed: () {
+            setState(() {
+              allNotice = [];
+              _getDate();
+            });
+            Navigator.pop(context);
+          },
+          child: Text("선택완료"),
+        ),
+      ],
+    );
+  }
+
+
 }

@@ -3,17 +3,18 @@ import 'package:html/dom.dart' as dom;
 import 'package:sm_notice/model/notice.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parse;
+import 'package:sm_notice/tools/vars.dart';
 
 class Major {
-
   String noticeMax = "&articleLimit=";
   String startLocation = "&article.offset=";
 
   String makeUrl(String majorName, int maxNotice, int startNotice) {
+    List<String>? majorCodeList = allMajors[majorName];
     String mainUrl = "https://" +
-        majorName +
+        majorCodeList![0] +
         ".smu.ac.kr/" +
-        majorName +
+        majorCodeList![1] +
         "/community/notice.do?srUpperNoticeYn=on";
     String newMax = noticeMax + maxNotice.toString();
     String newStart = startLocation + startNotice.toString();
@@ -27,7 +28,7 @@ class Major {
     return pageHtml.getElementsByClassName("board-thumb-wrap")[0].children;
   }
 
-  List<Notice> getAllNotice(List listCode) {
+  List<Notice> getAllNotice(List listCode, String majorName) {
     List<Notice> allNotice = [];
 
     for (var noticeCode in listCode) {
@@ -38,8 +39,8 @@ class Major {
         isTop = true;
       }
 
-      var campusName = "서울";
-      var categoryName = "컴퓨터과학과";
+      var campusName = "학과";
+      var categoryName = majorName;
       var titleName = "";
       var titleNameCode = realDataCode.children[0].getElementsByTagName("a")[0];
       if (titleNameCode.nodes.length == 1) {
@@ -95,7 +96,7 @@ class Major {
           campus: campusName,
           category: categoryName,
           baseReadUrl:
-              "https://cs.smu.ac.kr/cs/community/notice.do?mode=view&articleNo=");
+              "https://" + allMajors[majorName]![0] + ".smu.ac.kr/" + allMajors[majorName]![1] + "/community/notice.do?mode=view&articleNo=");
 
       allNotice.add(newNotice);
     }
