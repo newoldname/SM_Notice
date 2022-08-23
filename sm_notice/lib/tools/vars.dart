@@ -1,4 +1,4 @@
-final Map<String, List<String> > allMajors = {
+final Map<String, List<String>> allMajors = {
   "역사콘텐츠전공": ["history", "history"],
   "지적재산권전공": ["cr", "cc"],
   "문헌정보학전공": ["libinfo", "libinfo"],
@@ -33,4 +33,9 @@ final Map<String, List<String> > allMajors = {
   "음악학부": ["music", "music"]
   //무용예술전공은 기술적인 문제때문에 해당 리스트에 없습니다.
   //천안 캠퍼스 전공은 나중에 업로드하겠습니다.
+};
+
+final Map<String, String> allCampus = {
+  "서울캠퍼스" : "smu",
+  "천안캠퍼스" : "smuc"
 };

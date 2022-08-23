@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sm_notice/navigation_drawer.dart';
+import 'package:sm_notice/screen/search_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -28,7 +29,7 @@ class _MainPageState extends State<MainPage> {
         appBar: AppBar(
           title: Text(MyApp.title),
         ),
-        body: Text(""),
+        body: SearchScreen(),
       );
 }
 

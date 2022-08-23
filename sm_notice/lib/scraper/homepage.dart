@@ -1,18 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:html/dom.dart' as dom;
 import 'package:sm_notice/model/notice.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parse;
+import 'package:sm_notice/tools/vars.dart';
 
-class homepage {
+class Homepage {
   String pageUrl =
       "https://www.smu.ac.kr/lounge/notice/notice.do?srUpperNoticeYn=on";
   String selectCampus = "&srCampus=";
   String noticeMax = "&articleLimit=";
   String startLocation = "&article.offset=";
 
-  String makeUrl(String campus, int maxNotice, int startNotice) {
-    String newCampus = selectCampus + campus;
+  String makeUrl(String campusName, int maxNotice, int startNotice) {
+    String? campusCode = allCampus[campusName];
+    String newCampus = selectCampus + campusCode!;
     String newMax = noticeMax + maxNotice.toString();
     String newStart = startLocation + startNotice.toString();
     return pageUrl + newStart + newMax + newCampus;
@@ -80,7 +80,8 @@ class homepage {
           campus: campusName,
           category: categoryName,
           baseReadUrl:
-              "https://www.smu.ac.kr/lounge/notice/notice.do?mode=view&articleNo=");
+              "https://www.smu.ac.kr/lounge/notice/notice.do?mode=view&articleNo=",
+          lastUpdateTime: DateTime.now());
 
       allNotice.add(newNotice);
     }

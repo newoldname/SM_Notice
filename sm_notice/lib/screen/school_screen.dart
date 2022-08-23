@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sm_notice/model/notice.dart';
 import 'package:sm_notice/scraper/homepage.dart';
+import 'package:sm_notice/scraper/inside_text.dart';
+import 'package:sm_notice/screen/notice_list.dart';
+import 'package:sm_notice/tools/vars.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SchoolScreen extends StatefulWidget {
@@ -11,74 +14,125 @@ class SchoolScreen extends StatefulWidget {
 }
 
 class _SchoolScreenState extends State<SchoolScreen> {
-  List<Notice> allNotice = [];
   bool isLoading = false;
+  List<Notice> allNotice = [];
+  var selectCmp = Set<String>();
 
-  getDate() async {
+  bool isInSet(String cmpName) {
+    return selectCmp.contains(cmpName);
+  }
+
+  _addToSet(String cmpName) {
+    selectCmp.add(cmpName);
+  }
+
+  _removeFromSet(String cmpName) {
+    selectCmp.remove(cmpName);
+  }
+
+  _getDate() async {
     setState(() {
       isLoading = true;
     });
-    List noticeCode =
-        await homepage().getNoticeListCode(homepage().makeUrl("smu", 100, 0));
 
-    allNotice = homepage().getAllNotice(noticeCode);
-    isLoading = false;
+    for (var nowCmp in selectCmp) {
+      List noticeCode =
+          await Homepage().getNoticeListCode(Homepage().makeUrl(nowCmp, 30, 0));
+
+      allNotice += Homepage().getAllNotice(noticeCode);
+    }
+
+    allNotice.sort((a, b) {
+      return b.noticeID.compareTo(a.noticeID);
+    });
+
+    //각 공지의 세부 내용 가져오기
+    // for (var nowNotice in allNotice) {
+    //   var noticeCode = await InsideText().getNoticeTextCode(InsideText()
+    //       .makeNoticeTextUrl(
+    //           nowNotice.baseReadUrl, nowNotice.noticeID.toString()));
+    //   InsideText().updateMainData(nowNotice, noticeCode);
+    // }
 
     setState(() {
       isLoading = false;
     });
   }
 
-  _launchUrl(String baseUrl, int noticeId) async {
-    String realUrl = baseUrl + noticeId.toString();
-    if (await canLaunchUrl(Uri.parse(realUrl))) {
-      await launchUrl(Uri.parse(realUrl));
-    } else {
-      throw "Could not launch $realUrl";
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    getDate();
+    _addToSet("서울");
+    _getDate();
   }
 
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
-        : ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: allNotice.length,
-            itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                onTap: () {
-                  _launchUrl(
-                      allNotice[index].baseReadUrl, allNotice[index].noticeID);
-                },
-                child: Column(
-                  children: [
-                    Text(allNotice[index].title),
-                    Row(
-                      children: [
-                        allNotice[index].isTop ? Text("Top") : Text("Not Top"),
-                        Text(allNotice[index].category),
-                        Text(allNotice[index].campus),
-                        Text(allNotice[index].writer),
-                        Text(allNotice[index].date),
-                      ],
-                    ),
-                    Divider(
-                      color: Colors.blue,
-                      thickness: 5.0,
-                    ),
-                  ],
-                ),
-              );
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("School Notice"),
+      ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: NoticeList(allNotice: allNotice)),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (context) {
+                return majorCheckBoxAlert();
+              });
+        },
+        icon: Icon(Icons.add),
+        label: Text("Select Majors"),
+      ),
+    );
+  }
+
+  Widget majorCheckBoxAlert() {
+    return AlertDialog(
+      title: Text("캠퍼스를 선택하세요"),
+      content: StatefulBuilder(builder: (__, StateSetter setState) {
+        return Container(
+          width: 300,
+          height: 300,
+          child: Column(
+            children: [
+              ListView(
+                  children: allCampus.keys.map((String key) {
+                return CheckboxListTile(
+                    title: Text(key),
+                    value: isInSet(key),
+                    onChanged: (value) {
+                      if (value!) {
+                        _addToSet(key);
+                      } else {
+                        _removeFromSet(key);
+                      }
+                      setState(() {});
+                    });
+              }).toList()),
+              //Text("서울캠퍼스와 천안캠퍼스를 동시에 선택한 경우 공지가 중복될 수 있습니다."),
+            ],
+          ),
+        );
+      }),
+      actions: [
+        TextButton(
+          onPressed: () {
+            setState(() {
+              allNotice = [];
+              _getDate();
             });
+            Navigator.pop(context);
+          },
+          child: Text("선택완료"),
+        ),
+      ],
+    );
   }
 }

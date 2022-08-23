@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:sm_notice/model/notice.dart';
 import 'package:sm_notice/scraper/major.dart';
-import 'package:sm_notice/screen/notice_card.dart';
+import 'package:sm_notice/screen/notice_list.dart';
 import 'package:sm_notice/tools/vars.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:sm_notice/scraper/inside_text.dart';
 
 class MajorScreen extends StatefulWidget {
   const MajorScreen({Key? key}) : super(key: key);
@@ -15,7 +13,6 @@ class MajorScreen extends StatefulWidget {
 }
 
 class _MajorScreenState extends State<MajorScreen> {
-  String majorName = "hi";
   bool isLoading = false;
   List<Notice> allNotice = [];
   var selectMajors = Set<String>();
@@ -39,7 +36,7 @@ class _MajorScreenState extends State<MajorScreen> {
 
     for (var nowMajor in selectMajors) {
       List noticeCode =
-          await Major().getNoticeListCode(Major().makeUrl(nowMajor, 100, 0));
+          await Major().getNoticeListCode(Major().makeUrl(nowMajor, 30, 0));
 
       allNotice += Major().getAllNotice(noticeCode, nowMajor);
     }
@@ -48,25 +45,23 @@ class _MajorScreenState extends State<MajorScreen> {
       return b.noticeID.compareTo(a.noticeID);
     });
 
+    //각 공지의 세부 내용 가져오기
+    // for (var nowNotice in allNotice) {
+    //   var noticeCode = await InsideText().getNoticeTextCode(InsideText()
+    //       .makeNoticeTextUrl(
+    //           nowNotice.baseReadUrl, nowNotice.noticeID.toString()));
+    //   InsideText().updateMainData(nowNotice, noticeCode);
+    // }
+
     setState(() {
       isLoading = false;
     });
   }
 
-  _launchUrl(String baseUrl, int noticeId) async {
-    String realUrl = baseUrl + noticeId.toString();
-    if (await canLaunchUrl(Uri.parse(realUrl))) {
-      await launchUrl(Uri.parse(realUrl));
-    } else {
-      throw "Could not launch $realUrl";
-    }
-  }
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _addToSet("휴먼지능정보공학전공");
+    _addToSet("컴퓨터과학전공");
     _getDate();
   }
 
@@ -76,52 +71,12 @@ class _MajorScreenState extends State<MajorScreen> {
       appBar: AppBar(
         title: Text("Major Notice"),
       ),
-      body: Column(
-        children: [
-          isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Expanded(
-                  child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: allNotice.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return GestureDetector(
-                          onTap: () {
-                            _launchUrl(allNotice[index].baseReadUrl,
-                                allNotice[index].noticeID);
-                          },
-                          child: Column(
-                            children: [
-                              NoticeCard(nowNotice: allNotice[index]),
-
-                              // Text(allNotice[index].title),
-                              // Row(
-                              //   children: [
-                              //     allNotice[index].isTop
-                              //         ? Text("Top")
-                              //         : Text("Not Top"),
-                              //     Text(allNotice[index].category),
-                              //     Text(allNotice[index].campus),
-                              //     Text(allNotice[index].writer),
-                              //     Text(allNotice[index].date),
-                              //   ],
-                              // ),
-                              // Divider(
-                              //   color: Colors.blue,
-                              //   thickness: 5.0,
-                              // ),
-
-
-                            ],
-                          ),
-                        );
-                      }),
-                )
-        ],
-      ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: NoticeList(allNotice: allNotice)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           showDialog(
@@ -174,6 +129,5 @@ class _MajorScreenState extends State<MajorScreen> {
       ],
     );
   }
-
 
 }

@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:html/dom.dart' as dom;
 import 'package:sm_notice/model/notice.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parse;
@@ -11,11 +9,8 @@ class Major {
 
   String makeUrl(String majorName, int maxNotice, int startNotice) {
     List<String>? majorCodeList = allMajors[majorName];
-    String mainUrl = "https://" +
-        majorCodeList![0] +
-        ".smu.ac.kr/" +
-        majorCodeList![1] +
-        "/community/notice.do?srUpperNoticeYn=on";
+    String mainUrl =
+        "https://" + majorCodeList![0] + ".smu.ac.kr/" + majorCodeList![1] + "/community/notice.do?srUpperNoticeYn=on";
     String newMax = noticeMax + maxNotice.toString();
     String newStart = startLocation + startNotice.toString();
     return mainUrl + newStart + newMax;
@@ -61,18 +56,8 @@ class Major {
           .toString();
       var noticeID = noticeIDHref.split("&")[1].split("=")[1].toString();
 
-      // .nodes[2]
-      // .toString()
-      // .replaceAll("\t", "")
-      // .replaceAll("\n", "")
-      // .replaceAll("\"", "");
-
       var secendRowDataCode =
           realDataCode.children[1].getElementsByTagName("li");
-
-      //!!!!
-
-      //!!!!
 
       var noticeWriter = secendRowDataCode[0]
           .nodes[2]
@@ -96,7 +81,8 @@ class Major {
           campus: campusName,
           category: categoryName,
           baseReadUrl:
-              "https://" + allMajors[majorName]![0] + ".smu.ac.kr/" + allMajors[majorName]![1] + "/community/notice.do?mode=view&articleNo=");
+              "https://${allMajors[majorName]![0]}.smu.ac.kr/${allMajors[majorName]![1]}/community/notice.do?mode=view&articleNo=",
+          lastUpdateTime: DateTime.now());
 
       allNotice.add(newNotice);
     }
