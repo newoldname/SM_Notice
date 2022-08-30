@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sm_notice/model/notice.dart';
+import 'package:sm_notice/navigation_drawer.dart';
 import 'package:sm_notice/scraper/major.dart';
 import 'package:sm_notice/screen/notice_list.dart';
 import 'package:sm_notice/tools/vars.dart';
@@ -61,21 +62,33 @@ class _MajorScreenState extends State<MajorScreen> {
   @override
   void initState() {
     super.initState();
-    _addToSet("컴퓨터과학전공");
+    //_addToSet("컴퓨터과학전공");
     _getDate();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: NavigetionDrawer(),
       appBar: AppBar(
-        title: Text("Major Notice"),
+        title: Text("전공 공지사항 통합페이지"),
       ),
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : NoticeList(allNotice: allNotice),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+
+          selectMajors.isEmpty
+                    ? Text("아래 전공 선택 버튼을 눌러 여러 개의 전공을 선택해 공지들을 한 번에 보세요~")
+                    : Text("아래 전공을 포함해 공지를 가져옵니다\n" + selectMajors.toString()),
+          
+          isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Expanded(child: NoticeList(allNotice: allNotice)),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           showDialog(
@@ -86,7 +99,7 @@ class _MajorScreenState extends State<MajorScreen> {
               });
         },
         icon: Icon(Icons.add),
-        label: Text("Select Majors"),
+        label: Text("전공 선택"),
       ),
     );
   }

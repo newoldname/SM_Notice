@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:sm_notice/model/notice.dart';
+import 'package:sm_notice/navigation_drawer.dart';
 import 'package:sm_notice/scraper/homepage.dart';
 import 'package:sm_notice/scraper/major.dart';
 import 'package:sm_notice/scraper/search.dart';
@@ -100,12 +101,13 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: NavigetionDrawer(),
       appBar: AppBar(
-        title: Text("상명대 통합검색"),
+        title: Text("상명대 공지사항 통합검색"),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Center(
             child: Column(
@@ -146,14 +148,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Expanded(
-                      flex: 1,
-                      child: checkBoxCampus("서울캠퍼스")
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: checkBoxCampus("천안캠퍼스")
-                    ),
+                    Expanded(flex: 1, child: checkBoxCampus("서울캠퍼스")),
+                    Expanded(flex: 1, child: checkBoxCampus("천안캠퍼스")),
                     Expanded(
                       flex: 1,
                       child: FloatingActionButton.extended(
@@ -166,14 +162,14 @@ class _SearchScreenState extends State<SearchScreen> {
                               });
                         },
                         icon: Icon(Icons.add),
-                        label: Text("Select Majors"),
+                        label: Text("전공 선택"),
                       ),
                     )
                   ],
                 ),
-                Dialog(),
-                selectMajors.isEmpty?Text("")
-                :Text("아래 전공을 포함해 공지를 검색합니다\n" + selectMajors.toString()),
+                selectMajors.isEmpty
+                    ? Text("")
+                    : Text("아래 전공을 포함해 공지를 검색합니다\n" + selectMajors.toString()),
               ],
             ),
           ),
@@ -181,7 +177,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : NoticeList(allNotice: allNotice),
+              : Expanded(child: NoticeList(allNotice: allNotice)),
         ],
       ),
     );
@@ -204,6 +200,7 @@ class _SearchScreenState extends State<SearchScreen> {
         TextButton(
           onPressed: () {
             setState(() {
+              searchText();
             });
             Navigator.pop(context);
           },
@@ -237,7 +234,9 @@ class _SearchScreenState extends State<SearchScreen> {
           } else {
             _removeFromCamSet(key);
           }
-          setState(() {});
+          setState(() {
+            searchText();
+          });
         });
   }
 }

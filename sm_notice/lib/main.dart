@@ -22,14 +22,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   @override
-  Widget build(BuildContext context) => Scaffold(
-        drawer: NavigetionDrawer(),
-        // endDrawer: NavigationDrawerWidget(),
-        appBar: AppBar(
-          title: Text(MyApp.title),
-        ),
-        body: SearchScreen(),
-      );
+  Widget build(BuildContext context) => SearchScreen();
 }
 
 // class MyApp extends StatelessWidget {

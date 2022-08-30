@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sm_notice/model/notice.dart';
+import 'package:sm_notice/navigation_drawer.dart';
 import 'package:sm_notice/scraper/homepage.dart';
 import 'package:sm_notice/scraper/inside_text.dart';
 import 'package:sm_notice/screen/notice_list.dart';
@@ -62,21 +63,36 @@ class _SchoolScreenState extends State<SchoolScreen> {
   @override
   void initState() {
     super.initState();
-    _addToSet("서울캠퍼스");
+    //_addToSet("서울캠퍼스");
     _getDate();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: NavigetionDrawer(),
       appBar: AppBar(
-        title: Text("School Notice"),
+        title: Text("캠퍼스 공지사항 통합페이지"),
       ),
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : NoticeList(allNotice: allNotice),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(flex: 1, child: checkBoxCampus("서울캠퍼스")),
+              Expanded(flex: 1, child: checkBoxCampus("천안캠퍼스")),
+            ],
+          ),
+          isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Expanded(child: NoticeList(allNotice: allNotice)),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           showDialog(
@@ -87,7 +103,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
               });
         },
         icon: Icon(Icons.add),
-        label: Text("Select Campus"),
+        label: Text("캠퍼스 선택"),
       ),
     );
   }
@@ -128,5 +144,21 @@ class _SchoolScreenState extends State<SchoolScreen> {
         ),
       ],
     );
+  }
+
+  Widget checkBoxCampus(String key) {
+    return CheckboxListTile(
+        title: Text(key),
+        value: isInSet(key),
+        onChanged: (value) {
+          if (value!) {
+            _addToSet(key);
+          } else {
+            _removeFromSet(key);
+          }
+          setState(() {
+            _getDate();
+          });
+        });
   }
 }

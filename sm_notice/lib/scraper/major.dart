@@ -26,6 +26,10 @@ class Major {
   List<Notice> getAllNotice(List listCode, String majorName) {
     List<Notice> allNotice = [];
 
+    if (listCode[0].children[0].innerHtml == "등록된 글이 없습니다.") {
+      return allNotice;
+    }
+
     for (var noticeCode in listCode) {
       var realDataCode = noticeCode.children[0];
 

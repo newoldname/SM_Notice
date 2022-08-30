@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sm_notice/screen/major_screen.dart';
 import 'package:sm_notice/screen/school_screen.dart';
+import 'package:sm_notice/screen/search_screen.dart';
 
 class NavigetionDrawer extends StatelessWidget {
   final padding = EdgeInsets.symmetric(horizontal: 20);
@@ -40,7 +41,7 @@ class NavigetionDrawer extends StatelessWidget {
     switch (index) {
       case 0:
         Navigator.of(context).push(
-            new MaterialPageRoute(builder: ((context) => new MajorScreen())));
+            new MaterialPageRoute(builder: ((context) => new SearchScreen())));
         break;
       case 1:
         Navigator.of(context).push(

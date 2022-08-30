@@ -28,6 +28,11 @@ class Homepage {
   List<Notice> getAllNotice(List listCode) {
     List<Notice> allNotice = [];
 
+    //반환값이 빈값이 아닌 "게시글이 없다"는 글자이면 빈 리스트를 반환한다.
+    if (listCode[0].children[0].innerHtml == "등록된 글이 없습니다.") {
+      return allNotice;
+    }
+
     for (var noticeCode in listCode) {
       var realDataCode = noticeCode.children[0];
 
