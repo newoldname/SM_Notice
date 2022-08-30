@@ -75,8 +75,7 @@ class _MajorScreenState extends State<MajorScreen> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : SingleChildScrollView(
-              child: NoticeList(allNotice: allNotice)),
+          : NoticeList(allNotice: allNotice),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           showDialog(

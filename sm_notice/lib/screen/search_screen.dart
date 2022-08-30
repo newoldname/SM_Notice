@@ -107,102 +107,83 @@ class _SearchScreenState extends State<SearchScreen> {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Expanded(
-            flex: 3,
-            child: Center(
-              child: Column(
-                children: [
-                  Text("상명대 통합검색 이미지 넣는 곳"),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: TextField(
-                          controller: _textController,
-                          keyboardType: TextInputType.text,
-                          onSubmitted: (value) {
-                            searchText();
-                          },
-                          decoration: InputDecoration(
-                              labelText: "통합검색",
-                              hintText: "검색어를 입력하세요",
-                              border: OutlineInputBorder(),
-                              icon: Padding(
-                                padding: EdgeInsets.only(left: 13),
-                                child: Icon(Icons.search),
-                              )),
-                        ),
+          Center(
+            child: Column(
+              children: [
+                Text("상명대 통합검색 이미지 넣는 곳"),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 8,
+                      child: TextField(
+                        controller: _textController,
+                        keyboardType: TextInputType.text,
+                        onSubmitted: (value) {
+                          searchText();
+                        },
+                        decoration: InputDecoration(
+                            labelText: "통합검색",
+                            hintText: "검색어를 입력하세요",
+                            border: OutlineInputBorder(),
+                            icon: Padding(
+                              padding: EdgeInsets.only(left: 13),
+                              child: Icon(Icons.search),
+                            )),
                       ),
-                      Expanded(
-                        flex: 2,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            searchText();
-                          },
-                          child: Text("검색"),
-                        ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          searchText();
+                        },
+                        child: Text("검색"),
                       ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: checkBoxCampus("서울캠퍼스")
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: checkBoxCampus("서울캠퍼스")
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: checkBoxCampus("천안캠퍼스")
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: FloatingActionButton.extended(
+                        onPressed: () {
+                          showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (context) {
+                                return majorCheckBoxAlert();
+                              });
+                        },
+                        icon: Icon(Icons.add),
+                        label: Text("Select Majors"),
                       ),
-                      Expanded(
-                        flex: 1,
-                        child: checkBoxCampus("천안캠퍼스")
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: FloatingActionButton.extended(
-                          onPressed: () {
-                            showDialog(
-                                barrierDismissible: false,
-                                context: context,
-                                builder: (context) {
-                                  return majorCheckBoxAlert();
-                                });
-                          },
-                          icon: Icon(Icons.add),
-                          label: Text("Select Majors"),
-                        ),
-                      )
-                    ],
-                  ),
-                  Dialog(),
-                  selectMajors.isEmpty?Text("")
-                  :Text("아래 전공을 포함해 공지를 검색합니다\n" + selectMajors.toString()),
-                ],
-              ),
+                    )
+                  ],
+                ),
+                Dialog(),
+                selectMajors.isEmpty?Text("")
+                :Text("아래 전공을 포함해 공지를 검색합니다\n" + selectMajors.toString()),
+              ],
             ),
           ),
-          Expanded(
-            flex: 7,
-            child: isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : SingleChildScrollView(
-                    child: NoticeList(allNotice: allNotice)),
-          ),
+          isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : NoticeList(allNotice: allNotice),
         ],
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: () {
-      //     showDialog(
-      //         barrierDismissible: false,
-      //         context: context,
-      //         builder: (context) {
-      //           return majorCheckBoxAlert();
-      //         });
-      //   },
-      //   icon: Icon(Icons.add),
-      //   label: Text("Select Majors"),
-      // ),
     );
   }
 

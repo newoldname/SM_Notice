@@ -62,7 +62,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
   @override
   void initState() {
     super.initState();
-    _addToSet("서울");
+    _addToSet("서울캠퍼스");
     _getDate();
   }
 
@@ -76,49 +76,43 @@ class _SchoolScreenState extends State<SchoolScreen> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : SingleChildScrollView(
-              child: NoticeList(allNotice: allNotice)),
+          : NoticeList(allNotice: allNotice),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           showDialog(
               barrierDismissible: false,
               context: context,
               builder: (context) {
-                return majorCheckBoxAlert();
+                return campusCheckBoxAlert();
               });
         },
         icon: Icon(Icons.add),
-        label: Text("Select Majors"),
+        label: Text("Select Campus"),
       ),
     );
   }
 
-  Widget majorCheckBoxAlert() {
+  Widget campusCheckBoxAlert() {
     return AlertDialog(
       title: Text("캠퍼스를 선택하세요"),
       content: StatefulBuilder(builder: (__, StateSetter setState) {
         return Container(
           width: 300,
           height: 300,
-          child: Column(
-            children: [
-              ListView(
-                  children: allCampus.keys.map((String key) {
-                return CheckboxListTile(
-                    title: Text(key),
-                    value: isInSet(key),
-                    onChanged: (value) {
-                      if (value!) {
-                        _addToSet(key);
-                      } else {
-                        _removeFromSet(key);
-                      }
-                      setState(() {});
-                    });
-              }).toList()),
-              //Text("서울캠퍼스와 천안캠퍼스를 동시에 선택한 경우 공지가 중복될 수 있습니다."),
-            ],
-          ),
+          child: ListView(
+              children: allCampus.keys.map((String key) {
+            return CheckboxListTile(
+                title: Text(key),
+                value: isInSet(key),
+                onChanged: (value) {
+                  if (value!) {
+                    _addToSet(key);
+                  } else {
+                    _removeFromSet(key);
+                  }
+                  setState(() {});
+                });
+          }).toList()),
         );
       }),
       actions: [
